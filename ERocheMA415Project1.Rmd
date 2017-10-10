@@ -299,7 +299,7 @@ Mountain S.  | 1.335          | 0.125   |
 Pacific      | 1.363          | 0.124
 
 
-Based on this information, we can conclude, at reasonable \alpha levels, that people in the MidAtlantic, WNC, and Mountain N. have more refrigerators on average than the average national number. Those in ESC have fewer refrigerators on average. As stated before, this may be due in part to lack of availability of grocery stores in the region, or different culinary customs.
+Based on this information, we can conclude, at reasonable $\alpha$ levels, that people in the MidAtlantic, WNC, and Mountain N. have more refrigerators on average than the average national number. Those in ESC have fewer refrigerators on average. As stated before, this may be due in part to lack of availability of grocery stores in the region, or different culinary customs.
 
 ```{r warning = FALSE}
 #this chunks the indices for each division so that other data may be stratified based on division
