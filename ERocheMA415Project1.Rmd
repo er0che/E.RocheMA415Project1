@@ -2,18 +2,14 @@
 title: "Refrigerator Sales Project"
 author: "Elise Roche, Melody Shaff, Brian Clare, Carly Rose Willing, Joe Kass"
 date: "October 10, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
-
-# Introduction 
-
-In this project, we set out to determine which of the Energy Consumption Survey statistics are related to refrigerator ownership. We wanted to learn who the market audience is for different sizes and types of refrigerators, as well as glean who the primary purchasers are for multiple refrigerators. We examined the data in sets (household makeup, region of the country, climate, eco-friendly incentives, etc.) to find which variables were having an effect on refrigerator ownership in nuber, size, and type. We sought to draw meaningful conclusions about where (and where not) and who (and who not) to advertise refrigerators to, and further which refrigerators would be best received by these various groups. 
-
-\pagebreak
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
+#Please use install.packages("gridExtra") for this presentation
 #load libraries
 library(tidyverse)
 library(grid)
@@ -24,8 +20,9 @@ library(knitr)
 fridge <- read_csv("https://www.eia.gov/consumption/residential/data/2015/csv/recs2015_public_v1.csv") %>% 
 select(KOWNRENT, NUMFRIG, SIZRFRI1, TYPERFR1, AGERFRI1, ICE, SIZRFRI2, AGERFRI2, LOCRFRI2, NUMFREEZ, NUMMEAL, REBATEAPP, RECYCAPP, TAXCREDITAPP, ESFREEZE, ESFRIG, EMPLOYHH, ATHOME, MONEYPY, DIVISION, UATYP10)
 ```
+# Introduction 
 
-
+In this project, we set out to determine which of the Energy Consumption Survey statistics are related to refrigerator ownership. We wanted to learn who the market audience is for different sizes and types of refrigerators, as well as glean who the primary purchasers are for multiple refrigerators. We examined the data in sets (household makeup, region of the country, climate, eco-friendly incentives, etc.) to find which variables were having an effect on refrigerator ownership in nuber, size, and type. We sought to draw meaningful conclusions about where (and where not) and who (and who not) to advertise refrigerators to, and further which refrigerators would be best received by these various groups. 
 
 # Goals of Research
 
@@ -65,19 +62,38 @@ fridge$LOCRFRI2 <- apply(fridge[,9], MARGIN = 2, function(x){ifelse(x == 2, "Gar
 fridge$LOCRFRI2 <- apply(fridge[,9], MARGIN = 2, function(x){ifelse(x == 3, "Outside", x)})
 fridge$LOCRFRI2 <- apply(fridge[,9], MARGIN = 2, function(x){ifelse(x == 4, "Main Floor", x)})
 fridge$LOCRFRI2 <- apply(fridge[,9], MARGIN = 2, function(x){ifelse(x == 9, "Other", x)})
-
-
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 1, 21, x )})
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 2, 14, x )})
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 3, 7, x )})
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 4, 3.5, x )})
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 5, 1, x )})
+fridge$NUMMEAL <- apply(fridge[,11], MARGIN = 2, function(x) {ifelse(x == 6, 0.5, x )})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 1, "New England", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 2, "Mid Atlantic", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 3, "East North Central", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 4, "West North Central", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 5, "South Atlantic", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 6, "East South Central", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 7, "West South Central", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 8, "Mountain North", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 9, "Mountain South", x)})
+fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 10, "Pacific", x)})
 
 rebate1 <- filter(fridge, REBATEAPP > -1)
 rebate2 <- filter(fridge, RECYCAPP > -1)
 rebate3 <- filter(fridge, TAXCREDITAPP > -1)
 ```
 
+
+\pagebreak
+
 # General Refrigerator Size
 
-- Overall, categories 3 and 4 are the most popular sizes of primary refrigerator
-- 1 and 5 barely exist
-- Larger refrigerators are more likely to have ice dispensers
+Size categories 3 and 4 represent refrigerators with 17.6 to 22.5 and 22.6 to 29.5 cubic feet of storage volume. They are by far the most popular sizes of primary refrigerator. The larger size of common refrigerator is more likely to have a through-door ice dispenser.
+
+Size category 2, 17.5 cubic feet or less, is a less popular alternative.
+
+On the fringes, compact fridges and fridges with volume more than 29.5 cubic feet are extremely uncommon.
 
 ```{r warning = FALSE}
 ggplot(data = fridge, mapping = aes(x = SIZRFRI1)) + 
@@ -89,10 +105,9 @@ ggplot(data = fridge, mapping = aes(x = SIZRFRI1)) +
   
 # Second Refrigerator size
 
-- Second refrigerators are much more likely to be small, but there are still more midsize 2nd refrigerators
-- Most common locations of 2nd refrigerators are basement, garage and main floor
-- Smaller second refrigerators more likely on main floor
-- Second refrigerator in garage or basement is more likely midsize
+Though most respondents owned only one refrigerator, many had a second fridge in use. As we might expect, smaller fridge sizes (including compacts) are more common for second fridges but the "regular" sizes are still very common.
+
+Most second fridges are located in a basement, garage, or on the main floor of the home. The main floor is more common for compact second fridges, while a second large refrigerator is more likely to be in a basement or garage.
 
 ``` {r warning = FALSE}
 ggplot(data = filter(fridge, SIZRFRI2 > 0), mapping = aes(x = SIZRFRI2)) +
@@ -100,7 +115,11 @@ ggplot(data = filter(fridge, SIZRFRI2 > 0), mapping = aes(x = SIZRFRI2)) +
   labs(x = "Size of 2nd Refrigerator", y = "Households", fill = "Location of 2nd Refrigerator")
 ```
 
+\pagebreak
+
 # Most refrigerators have 2 doors in some configuration. Ice dispensers are less than 50% of 2-door models
+
+Refrigerators generally have 1 or 2 doors, although some larger models have 3 doors. We can see that 2 door models are the most common, and that through-door ice dispensers are common (though not a majority) for 2 door fridges and very rare for single door models.
 
 ```{r warning = FALSE}
 ggplot(data = fridge, mapping = aes(x = TYPERFR1)) + 
@@ -274,10 +293,8 @@ ggplot(data=fridge, mapping=aes(x=ICE, fill = KOWNRENT)) +
 Some areas of the United States have increased rates of refrigerator ownership. This may be due to a variety of factors like available supermarkets, climate, and food customs. Advertising to the places that have more people who own multiple refrigerators will likely be more succesful than in other areas where this is less common.
 
 
-```{r warning=FALSE, message=FALSE}
-ggplot(data=fridge, mapping=aes(x = DIVISION, y = NUMFRIG, color = as.factor(DIVISION))) + 
-  geom_jitter() + geom_smooth(se = FALSE) + labs(title="Number of Refrigerators vs. Geographic Census Division", y="Number of Refrigerators", x="Geographic Division") +
-  scale_colour_hue(name="Geographic Division", labels=c("New England", "MidAtlantic", "ENC", "WNC", "SouthAtlantic", "ESC","WSC","MNo","MSo","Pacific"))
+```{r warning=FALSE}
+ggplot(data=fridge, mapping=aes(x = DIVISION, y = NUMFRIG, color = as.factor(DIVISION))) + geom_jitter(aes(show.legend=F)) + labs(title="Number of Refrigerators Per Division", y="Number of Refrigerators", x="Geographic Division") + theme(axis.text.x = element_text(angle = 70, hjust = 1), legend.position = "none")
 ```
 
 #T-Test for Difference of Means 
@@ -301,18 +318,18 @@ Pacific      | 1.363          | 0.124
 
 Based on this information, we can conclude, at reasonable $\alpha$ levels, that people in the MidAtlantic, WNC, and Mountain N. have more refrigerators on average than the average national number. Those in ESC have fewer refrigerators on average. As stated before, this may be due in part to lack of availability of grocery stores in the region, or different culinary customs.
 
-```{r warning = FALSE}
+```{r warning = FALSE, include = FALSE}
 #this chunks the indices for each division so that other data may be stratified based on division
-NewEngland <- which(fridge$DIVISION %in% c(1))
-MidAt <- which(fridge$DIVISION %in% c(2)) 
-ENC <- which(fridge$DIVISION %in% c(3))
-WNC <- which(fridge$DIVISION %in% c(4))
-SoAt <- which(fridge$DIVISION %in% c(5))
-ESC <- which(fridge$DIVISION %in% c(6))
-WSC <- which(fridge$DIVISION %in% c(7))
-MNo <- which(fridge$DIVISION %in% c(8))
-MSo <- which(fridge$DIVISION %in% c(9))
-Pacific <- which(fridge$DIVISION %in% c(10))
+NewEngland <- which(fridge$DIVISION %in% "New England")
+MidAt <- which(fridge$DIVISION %in% "Mid Atlantic") 
+ENC <- which(fridge$DIVISION %in% "East North Central")
+WNC <- which(fridge$DIVISION %in% "West North Central")
+SoAt <- which(fridge$DIVISION %in% "South Atlantic")
+ESC <- which(fridge$DIVISION %in% "East South Central")
+WSC <- which(fridge$DIVISION %in% "West South Central")
+MNo <- which(fridge$DIVISION %in% "Mountain North")
+MSo <- which(fridge$DIVISION %in% "Mountain South")
+Pacific <- which(fridge$DIVISION %in% "Pacific")
 
 #This finds the number of fridges per household based on which geographic division they reside in
 NewEngland1 <- fridge$NUMFRIG[NewEngland]
@@ -343,18 +360,9 @@ t.test(fridge$NUMFRIG, Pacific1)
 
 # Areas with multiple refrigerator households:
 Of those who have two or more refrigerators, it seems as though the Mid Atlantic, West North Central, and East North Central are where the majority of the households reside. Similarly, as shown, of those households without a refrigerator, the majority of the households reside in the West South Central or South Atlantic regions. This is interesting particularly for the West South Central region because the sample size is lower, indicating that the lack of refrigerators may be due to a geographic variable. 
-1 = New England  
-2 = Mid Atlantic  
-3 = East North Central  
-4 = West North Central  
-5 = South Atlantic  
-6 = East South Central  
-7 = West South Central  
-8 = Mountain North  
-9 = Mountain South  
-10 = Pacific  
 
 ```{r message=FALSE}
+
 #This chunk looks only at those who have 2+ refrigerators 
 y <- which(fridge$NUMFRIG %in% c(2, 3, 4, 5, 6, 7, 8))
 mark1 <-fridge$DIVISION[y]
@@ -362,9 +370,8 @@ mark1 <-fridge$DIVISION[y]
 #this plots those who have 2+ refrigerators based on their geographic division
 mark1 <- data.frame(x=mark1)
 ggplot(mark1, aes(x=x))+
-  geom_histogram(binwidth=1,color="black", fill="grey")+
-  scale_x_continuous(breaks=c(1,2,3,4,5,6,7,8,9,10))+
-  labs(title="Geographic Division of those with 2 or More Refrigerators", x="Geographic Division", y="Number of Households with 2+ Refrigerators")
+  geom_bar(color="black", fill= "light coral", aes(y = (..count..)/sum(..count..))) + scale_x_discrete(limits=c("New England","Mid Atlantic", "East North Central", "West North Central", "South Atlantic", "East South Central", "West South Central", "Mountain North", "Mountain South", "Pacific"))+
+  labs(title="Geographic Division of those with 2 or More Refrigerators", x="Geographic Division", y="% Of Households") + theme(axis.text.x = element_text(angle = 70, hjust = 1))
 ```
 ```{r message = FALSE}
 #this chunk looks at homes with 0 refrigerators
@@ -372,43 +379,49 @@ zero <- which(fridge$NUMFRIG %in% c(0))
 mark <- fridge$DIVISION[zero]
 mark <- data.frame(x=mark)
 ggplot(mark, aes(x=x))+
-  geom_histogram(binwidth=1,color="black", fill="grey")+
-  scale_x_continuous(breaks=c(1,2,3,4,5,6,7,8,9,10))+
-  labs(title="Geographic Division of those with 0 Refrigerators", x="Geographic Division", y="Number of Households with 0 Refrigerators")
+  geom_bar(color="black", fill="aqua marine", aes(y = (..count..)/sum(..count..)))+
+  scale_x_discrete(limits=c("New England","Mid Atlantic", "East North Central", "West North Central", "South Atlantic", "East South Central", "West South Central", "Mountain North", "Mountain South", "Pacific"))+
+  labs(title="Geographic Division of those with 0 Refrigerators", x="Geographic Division", y="% Of Households") + theme(axis.text.x = element_text(angle = 70, hjust = 1))
 ```
+
+\pagebreak
+
 
 #Age of Refrigerator Based on Geographic Location
 Based on the figure below, we can see that those in the Mountain North region have fewer refrigerators over 5-7 years old. In comparison, those in the MidAtlantic region have a higher concentration of older refrigerators when looking at the corresponding sample sizes. As a result, one can look to the regions containing a larger number of older refrigerators when marketing replacements.
-```{r message = FALSE, warning=FALSE}
-ggplot(data=fridge, mapping=aes(x=DIVISION, y=AGERFRI1, color=as.factor(DIVISION))) + 
-  geom_jitter() + geom_smooth(se=FALSE) + labs(title="Age of Most Used Refrigerator vs. Geographic Region", x="Geographic Region", y="Age of Most Used Refrigerator") +
-  scale_colour_hue(name="Geographic Region", labels=c("New England", "MidAtlantic", "ENC", "WNC", "SouthAtlantic", "ESC","WSC","MNo","MSo","Pacific"))
-
+```{r warning = FALSE}
+ggplot(data=fridge, mapping=aes(x=DIVISION, y=AGERFRI1, colour = DIVISION, show.legend = FALSE)) + geom_jitter() + labs(title="Age of Most Used Refrigerator vs. Geographic Region", x="Geographic Region", y="Age of Most Used Refrigerator") + theme(axis.text.x = element_text(angle = 70, hjust = 1),legend.position = "none")
 ```
+
+\pagebreak
 
 #Urban Type also impacts number of Freezers
 From just looking at the figure below, it is evident that those in Rural areas have more separate freezers than those who live in Urban areas or Urban Clusters. This is likely due to increased distance between home and the grocery store, making larger grocery trips more efficient. With this information, we can choose to market refrigerators with larger freezers to individuals in rural areas so that they do not have to rely as much on their extra freezer.
 
 ```{r message = FALSE}
 #This plots the number of refrigerators vs the urban location type 
-ggplot(data = fridge, mapping = aes(x = UATYP10, y = NUMFREEZ, color = as.factor(UATYP10))) + geom_jitter() + geom_smooth(se = FALSE) + labs(title="Number of Freezers vs. Urban Type", x="Urban Type", y="Number of Freezers")+ scale_colour_hue(name="Location Type", labels=c("Urban Cluster","Rural","Urban Area"))
+ggplot(data = fridge, mapping = aes(x = UATYP10, y = NUMFREEZ, colour = as.factor(UATYP10))) + geom_jitter() + labs(title="Number of Freezers vs. Urban Type", x="Urban Type", y="Number of Freezers")+ scale_colour_hue(name="Location Type", labels=c("Urban Cluster","Rural","Urban Area"))
 ```
+
+\pagebreak
 
 # Retired and Fully employed people are most likely to own multiple refrigerators:
 As a result, a marketing campaign aimed more towards those who are Retired or Fully Employed. They may have higher rates of refrigerator ownership due to having incomes which place them in an economically stable position where they feel more comfortable buying more "luxury" type goods.
+
 ```{r message=FALSE}
 #this plots the number of fridges for each employment status
 ggplot(data=fridge, mapping=aes(x=EMPLOYHH, y=NUMFRIG, color=as.factor(EMPLOYHH))) + 
-  geom_jitter() + geom_smooth(se=FALSE) + labs(title="Number of Refrigerator vs. Employment Status of Household", x="Employment Status", y="Number of Refrigerator") +
+  geom_jitter() + labs(title="Number of Refrigerator vs. Employment Status of Household", x="Employment Status", y="Number of Refrigerator") +
   scale_colour_hue(name="Employment Status", labels=c("Retired","Full Time","Part Time"))
 
 ```
 
 \pagebreak
 
-# The Culinarily Inclined own more refrigerators
+# People who cook more tend to own more refrigerators
 
-People that cook more hot meals own more refrigerators, which makes them an obvious group to advertise to. They also are more likely to own refrigerators that are extreme on the size spectrum; meaning that those who cook often are more likely to own very large or small refrigerators in addition to those who own the most common sizes.
+People that cook more hot meals frequently own more refrigerators, which makes them an obvious group to advertise to. They also are more likely to own refrigerators that are extreme on the size spectrum; meaning that those who cook often are more likely to own very large or small refrigerators in addition to the most common sizes. Advertising refrigerators to people who are in the market for other cooking appliances and apparatuses would likely yield results, as these are likely predictors of those who cook more often.
+
 
 ```{r}
 
@@ -419,8 +432,13 @@ ggplot(data=fridge, aes(y = as.numeric(NUMMEAL), x = as.factor(NUMFRIG), color=a
 
 ```
 
+\pagebreak
 
 # The largest and smallest refrigerators are bought by those who cook more frequently:
+
+The only significant increase in refrigerator ownership is within the group that cooks a few meals a day, who also tend to have smaller than average refrigerators. Because this group is the most populous, we can assume that the average consumer would be willing to purchase an additional small refrigerator given conducive advertising.
+
+
 ```{r warning = FALSE}
 ggplot(data=fridge, aes(y = NUMMEAL, x = SIZRFRI1, color=as.factor((SIZRFRI1)))) + geom_boxplot() + labs(title="Meals cooked vs. Size of Refrigerator",y = "Number of Meals Cooked",x ="Size of Refrigerator") +
   scale_colour_hue(name="")
@@ -432,5 +450,4 @@ ggplot(data=fridge, aes(y = NUMMEAL, x = SIZRFRI1, color=as.factor((SIZRFRI1))))
 
 # Final Conclusions
 
-Over the course of our exploration, we found that folks living in the Mid-Atlantic tend to have older refrigerators and, thus, may be in the market for upgrades. We also found that rural communities are more likely to have larger refrigerators than urban clusters, which could also be linked to homeownership as owners are more likely to own large refrigerators than renters. Thus, rural homeowners provide the optimum market for large refrigerators. Money also plays a role in refrigerator ownership, as those who received rebates are more likely to own more and more expensive refrigerators. In light of this, marketing higher-end refrigerators to those with these monetary incentives is a worthwhile endeavor as they are more likely to purchase these products. We also found, relatively unsurprisingly, that those who cook more meals per week are more likely to own more refrigerators. All of these factors, we can predict, give us a few key groups to target: rural homeowners for large refrigerators; urban renters for smaller, more basic refrigerator designs; homeowners in areas with monetary incentives for eco-friendly refrigerator upgrades with high-end refrigerators; and Mid-Atlantic dwellers for updates on their largely out-dated refrigerators.      
-
+Over the course of our exploration, we found that folks living in the Mid-Atlantic tend to have older refrigerators and, thus, may be in the market for upgrades. We also found that rural communities are more likely to have larger refrigerators than urban clusters, which could also be linked to home-ownership as owners are more likely to own large refrigerators than renters. Thus, rural homeowners provide the optimum market for large refrigerators. Money also plays a role in refrigerator ownership, as those who received rebates are more likely to own more and more expensive refrigerators. In light of this, marketing higher-end refrigerators to those with these monetary incentives is a worthwhile endeavor as they are more likely to purchase these products and more of said products. We also found, relatively unsurprisingly, that those who cook more meals per week are more likely to own more refrigerators and refrigerators smaller and larger than the general average. All of these factors, we can predict, give us a few key groups to target: rural homeowners for large refrigerators or those with larger freezers; large refrigerators for those living in the South Atlantic; urban renters for smaller, more basic refrigerator designs; homeowners in areas with monetary incentives for eco-friendly refrigerator upgrades with high-end refrigerators; and Mid-Atlantic dwellers for updates on their largely out-dated refrigerators.      
