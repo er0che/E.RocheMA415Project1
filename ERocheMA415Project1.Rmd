@@ -18,6 +18,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(grid)
 library(gridExtra)
+library(knitr)
 
 #input data
 fridge <- read_csv("https://www.eia.gov/consumption/residential/data/2015/csv/recs2015_public_v1.csv") %>% 
@@ -407,22 +408,23 @@ ggplot(data=fridge, mapping=aes(x=EMPLOYHH, y=NUMFRIG, color=as.factor(EMPLOYHH)
 
 # The Culinarily Inclined own more refrigerators
 
-People that cook more hot meals own more refrigerators, which makes them an obvious group to advertise to. They also are more likely to own refrigerators that are extrema on the size spectrum; meaning that those who cook often are more likely to own very large or small refrigerators in addition to those who own the most common sizes.
+People that cook more hot meals own more refrigerators, which makes them an obvious group to advertise to. They also are more likely to own refrigerators that are extreme on the size spectrum; meaning that those who cook often are more likely to own very large or small refrigerators in addition to those who own the most common sizes.
 
 ```{r}
+
 #Amount of Hot meals cooked against fridges
-ggplot(data=fridge, aes(x=NUMMEAL, y=NUMFRIG,color=as.factor(NUMMEAL))) + geom_jitter() +
-labs(title= "Meals cooked vs. Number of Refrigerators owned",x="Number of Meals Cooked",y="Number of Refrigerators") +
-scale_colour_hue(name="")
+ggplot(data=fridge, aes(y = as.numeric(NUMMEAL), x = as.factor(NUMFRIG), color=as.factor(NUMFRIG))) + geom_boxplot() +
+  labs(title= "Meals cooked vs. Number of Refrigerators owned", y = "Number of Meals Cooked", x = "Number of Refrigerators") +
+  scale_colour_hue(name="")
 
 ```
 
 
 # The largest and smallest refrigerators are bought by those who cook more frequently:
 ```{r warning = FALSE}
-ggplot(data=fridge, aes(x=NUMMEAL, y=SIZRFRI1, color=as.factor((NUMMEAL)))) + geom_jitter() +
-labs(title="Meals cooked vs. Size of Refrigerator",x="Number of Meals Cooked",y="Size of Refrigerator") +
+ggplot(data=fridge, aes(y = NUMMEAL, x = SIZRFRI1, color=as.factor((SIZRFRI1)))) + geom_boxplot() + labs(title="Meals cooked vs. Size of Refrigerator",y = "Number of Meals Cooked",x ="Size of Refrigerator") +
   scale_colour_hue(name="")
+
 
 ```
 
