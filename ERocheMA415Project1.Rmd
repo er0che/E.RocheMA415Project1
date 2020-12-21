@@ -79,9 +79,9 @@ fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 8, "Mo
 fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 9, "Mountain South", x)})
 fridge$DIVISION <- apply(fridge[,20], MARGIN = 2, function(x){ifelse(x == 10, "Pacific", x)})
 
-rebate1 <- filter(fridge, REBATEAPP > -1)
-rebate2 <- filter(fridge, RECYCAPP > -1)
-rebate3 <- filter(fridge, TAXCREDITAPP > -1)
+rebate1 <- dplyr::filter(fridge, REBATEAPP > -1)
+rebate2 <- dplyr::filter(fridge, RECYCAPP > -1)
+rebate3 <- dplyr::filter(fridge, TAXCREDITAPP > -1)
 ```
 
 
